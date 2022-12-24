@@ -47,6 +47,16 @@ String::~String()
 	}
 }
 
+size_t String::getSize()const
+{
+	return size;
+}
+
+char* String::getString()const
+{
+	return ptr;
+}
+
 String& String::operator = (const char* str)
 {
 	if (ptr != nullptr)
@@ -82,7 +92,7 @@ String& String::operator = (String&& str) noexcept
 	return *this;
 }
 
-char& String::operator [] (size_t pos)
+char& String::operator [] (size_t pos)const
 {
 	if (pos > size)
 	{
@@ -94,6 +104,11 @@ char& String::operator [] (size_t pos)
 
 String& String::insert(size_t pos, const char* str)
 {
+	if (pos > size)
+	{
+		std::cerr << "	You are out of line\n";
+		return *this;
+	}
 	size_t lenth = strlen(str);
 	String buf = std::move(*this);
 	size = buf.size + lenth;
@@ -114,7 +129,7 @@ String& String::insert(size_t pos, const char* str)
 	return *this;
 }
 
-int String::compare(const String& str)
+int String::compare(const String& str)const
 {
 	size_t i;
 	for (i = 0; ptr[i] != '\0' && str.ptr[i] != '\0'; ++i)
@@ -141,24 +156,24 @@ int String::compare(const String& str)
 
 size_t String::rfind(const char* str, size_t pos, size_t n) const
 {
-	if (str == nullptr)
+	if (str == nullptr|| strlen(str) == 0)
 	{
-		std::cerr << "	Searched string does not exist\n";
-		return ptr[size];
+		std::cerr << "	Searched string does not exist ";
+		return size;
 	}
 	if (strlen(str) < n)
 	{
-		std::cerr << "	Search string doesn't have that many characters\n";
-		return ptr[size];
+		std::cerr << "	Search string doesn't have that many characters ";
+		return size;
 	}
 	if (pos + n > size)
 	{
-		std::cerr << "	You are out of line\n";
-		return ptr[size];
+		std::cerr << "	You are out of line ";
+		return size;
 	}
 	size_t buf = size + 1;
 	bool flag;
-	for (size_t i = pos; i < size - n; ++i)
+	for (size_t i = pos; i <= size - n; ++i)
 	{
 		flag = true;
 		for (size_t j = i; j < i + n; ++j)
@@ -166,6 +181,7 @@ size_t String::rfind(const char* str, size_t pos, size_t n) const
 			if (ptr[j] != str[j - i])
 			{
 				flag = false;
+				break;
 			}
 		}
 		if (flag)
@@ -175,7 +191,7 @@ size_t String::rfind(const char* str, size_t pos, size_t n) const
 	}
 	if (buf > size)
 	{
-		return ptr[size];
+		return size;
 	}
 	return buf;
 }
